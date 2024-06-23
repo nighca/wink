@@ -7,9 +7,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Slider } from "@/components/ui/slider"
 import { Label } from '@/components/ui/label'
 
+const minAmount = 1
+const defaultAmount = 1
+
 export default function AddDeal({ group, onAdded }: {
   group: DetailedGroup
-  onAdded: (deal: Deal) => void
+  onAdded: (deals: Deal[]) => void
 }) {
   const { user } = useCurrentUser()
   const noteInput = useRef<HTMLTextAreaElement>(null)
@@ -24,7 +27,7 @@ export default function AddDeal({ group, onAdded }: {
   function endEditting() {
     setEditting(false)
     setNote('')
-    setAmount(Math.min(10, balance ?? 100))
+    setAmount(Math.min(defaultAmount, balance ?? 100))
   }
 
   const [note, setNote] = useState('')
@@ -33,9 +36,8 @@ export default function AddDeal({ group, onAdded }: {
   }
 
   const balance = user == null ? null : (group.balance[user.id] ?? null)
-  const minAmount = 1
   const maxAmount = balance ?? 100
-  const [amount, setAmount] = useState(1)
+  const [amount, setAmount] = useState(defaultAmount)
   function handleAmountChange([amount]: number[]) {
     setAmount(amount)
   }
@@ -46,16 +48,16 @@ export default function AddDeal({ group, onAdded }: {
     e.preventDefault()
     setSubmitting(true)
     try {
-      const deal = await addDeal(group.name, { note, amount })
+      const deals = await addDeal(group.name, { note, amount })
       endEditting()
-      onAdded(deal)
+      onAdded(deals)
     } finally {
       setSubmitting(false)
     }
   }
   return (
     <>
-      {balance != null && <p className='text-xs text-slate-500 text-center'>My balance: {balance}</p>}
+      {balance != null && <p className='text-xs text-slate-500 text-center'>My balance: ${balance}</p>}
       {balance != null && balance > 0 && (
         <Button className={cns('w-full', editting && 'hidden')} onClick={startEditting}>
           Add deal
@@ -64,13 +66,13 @@ export default function AddDeal({ group, onAdded }: {
       <form className={cns("grid gap-4", !editting && 'hidden')} onSubmit={handleAddDeal}>
         <Textarea ref={noteInput} name="note" disabled={submitting} placeholder="Note" required value={note} onChange={handleNoteChange} />
         <div className='flex gap-2 items-center'>
-          <Label>Amount</Label>
+          <Label>$</Label>
           <span className='text-xs text-slate-500'>{minAmount}</span>
           <Slider disabled={submitting} min={minAmount} max={maxAmount} step={1} value={[amount]} onValueChange={handleAmountChange} />
           <span className='text-xs text-slate-500'>{maxAmount}</span>
           </div>
         <Button type="submit" className='w-full' loading={submitting}>
-          Deal {amount}
+          Deal ${amount}
         </Button>
         <Button type="button" variant="ghost" disabled={submitting} onClick={endEditting}>
           Cancel

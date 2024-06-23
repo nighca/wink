@@ -65,6 +65,7 @@ export async function addDeal(groupName: string, { amount, note }: Pick<Deal, 'a
   const group = await getGroup(groupName)
 if (group.members.length !== 2) throw new Error('Not a pair')
   if (group == null) throw new Error('Group not found')
+  if (Number.isNaN(amount) || amount <= 0 || amount >= Number.MAX_SAFE_INTEGER) throw new Error('Invalid amount')
   const from = user.id
   const to = group.members.find(m => m !== user.id)!
   const fromBalance = group.balance[from]
@@ -79,10 +80,28 @@ if (group.members.length !== 2) throw new Error('Not a pair')
   }
   const time = Date.now()
   const deal: Deal = { time, from, to, amount, note }
-  await setGroup(groupName, {
-    ...group,
-    balance,
-    deals: [...group.deals, deal],
-  })
-  return deal
+  const deals = [...group.deals, deal]
+  await setGroup(groupName, { ...group, balance, deals })
+  return deals
+}
+
+export async function revertLastDeal(groupName: string) {
+  const user = await ensureCurrentUser()
+  if (user == null) throw new Error('Login required')
+  const group = await getGroup(groupName)
+  const lastDeal = group.deals[group.deals.length - 1]
+  if (lastDeal == null) throw new Error('No deal to revert')
+  if (lastDeal.to !== user.id) throw new Error('Not the receiver of the last deal')
+  const fromBalance = group.balance[lastDeal.from]
+  if (fromBalance == null) throw new Error(`No balance for ${lastDeal.from}`)
+  const toBalance = group.balance[lastDeal.to]
+  if (toBalance == null) throw new Error(`No balance for ${lastDeal.to}`)
+  const balance = {
+    ...group.balance,
+    [lastDeal.from]: fromBalance + lastDeal.amount,
+    [lastDeal.to]: toBalance - lastDeal.amount,
+  }
+  const deals = group.deals.slice(0, -1)
+  await setGroup(groupName, { ...group, balance, deals })
+  return deals
 }
