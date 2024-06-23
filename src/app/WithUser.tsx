@@ -1,25 +1,32 @@
 import { PropsWithChildren } from 'react'
-import { redirect } from 'next/navigation'
-import { getSession } from '@auth0/nextjs-auth0'
-import { UserProfile } from '@auth0/nextjs-auth0/client'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import UserAvatar from '@/components/UserAvatar'
+import { ensureCurrentUser } from '@/models'
+import LogoutMenuItem from './LogoutMenuItem'
 
 export default async function WithUser({ children }: PropsWithChildren<{}>) {
-  const session = await getSession()
-  if (session?.user == null) redirect('/api/auth/login')
-  const user: UserProfile = session.user
+
+  const user = await ensureCurrentUser()
+
   return (
     <>
-      <header className="w-full flex flex-row items-center gap-2">
-        <Avatar className='shrink-0'>
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-        <div className='grow flex flex-col gap-1'>
-          <span className='shrink-0'>{user.name}</span>
-          <span className='text-xs text-slate-500 truncate'>{user.sub}</span>
-        </div>
-        <a href="/api/auth/logout" className='text-sm'>Logout</a>
+      <header className="w-full flex flex-row items-center justify-end gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <UserAvatar className='shrink-0' user={user} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side='bottom' align='start'>
+            <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <LogoutMenuItem />
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
       {children}
     </>

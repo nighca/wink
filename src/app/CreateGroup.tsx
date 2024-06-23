@@ -25,7 +25,11 @@ export default function CreateGroup() {
         <form className="grid gap-4" action={createGroup}>
           <div className="grid gap-2">
             <Label htmlFor="name">Name</Label>
-            <Input type="text" name="name" placeholder="test" required />
+            <Input type="text" name="name" placeholder="" required />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="member">Another member</Label>
+            <Input type="text" name="member" placeholder="Paste the user ID here" required />
           </div>
           <Button type="submit" className="w-full">
             Create

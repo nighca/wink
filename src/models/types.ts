@@ -1,8 +1,9 @@
-import type { UserProfile } from '@auth0/nextjs-auth0/client'
-
-export type User = UserProfile & {
+export type User = {
   /** Uid */
   id: string
+  name: string
+  email: string | null
+  picture: string | null
 }
 
 export type Deal = {

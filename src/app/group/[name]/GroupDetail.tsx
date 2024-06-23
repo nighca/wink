@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import dayjs from 'dayjs'
 import {
   Card,
@@ -17,10 +17,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Deal, Group } from '@/models'
+import UserAvatar from '@/components/UserAvatar'
+import { Deal, DetailedGroup } from '@/models'
 import AddDeal from './AddDeal'
 
-export default function GroupDetail({ group }: { group: Group }) {
+export default function GroupDetail({ group }: { group: DetailedGroup }) {
 
   const [deals, setDeals] = useState<Deal[]>(group.deals)
 
@@ -30,34 +31,13 @@ export default function GroupDetail({ group }: { group: Group }) {
 
   return (
     <>
-      <Card className="mx-auto max-w-full flex-1 flex flex-col">
-        <CardHeader>
-          <CardTitle className="text-2xl">Group {group.name}</CardTitle>
-          <CardDescription>
-            Members: {group.members.join(', ')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex-1 flex flex-col gap-4">
-          <div className='flex-1 flex flex-col'>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">Date</TableHead>
-                  <TableHead>Wisher</TableHead>
-                  <TableHead>Note</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {deals.map((deal, i) => (
-                  <DealRow key={i} {...deal} />
-                ))}
-              </TableBody>
-            </Table>
-            {deals.length === 0 && (
-              <div className='flex-1 flex items-center justify-center text-center text-xs text-slate-500'>No deal</div>
-            )}
-          </div>
+      <Card className="w-full min-h-0 flex-1 flex flex-col">
+        <header className='p-6 flex flex-row justify-between items-center'>
+          <h3 className="text-2xl font-semibold leading-none tracking-tight">{group.name}</h3>
+          <Members {...group} />
+        </header>
+        <CardContent className="flex-1 min-h-0 flex flex-col gap-2">
+          <DealList deals={deals} group={group} />
           <AddDeal group={group} onAdded={handleAdded} />
         </CardContent>
       </Card>
@@ -65,15 +45,51 @@ export default function GroupDetail({ group }: { group: Group }) {
   )
 }
 
-function DealRow(deal: Deal) {
+function Members({ memberProfiles }: DetailedGroup) {
+  return (
+    <div className='group flex gap-2'>
+      {memberProfiles.map(m => (
+        <UserAvatar key={m.id} className='w-6 h-6 ml-[-20px] group-hover:ml-0' user={m} />
+      ))}
+    </div>
+  )
+}
+
+function DealList({ deals, group }: { deals: Deal[], group: DetailedGroup }) {
+
+  const listRef = useRef<HTMLUListElement>(null)
+
+  useEffect(() => {
+    console.log('listRef.current', listRef.current?.scrollHeight)
+    setTimeout(() => {
+      listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' })
+    }, 300)
+  }, [deals])
+
+  if (deals.length === 0) {
+    return <div className='flex-1 flex items-center justify-center text-center text-sm text-slate-500'>No deal</div>
+  }
+  return (
+    <ul ref={listRef} className='flex-1 min-h-0 overflow-auto pt-4 flex flex-col gap-6 items-stretch'>
+      {deals.map((deal, i) => (
+        <DealItem key={i} deal={deal} group={group} />
+      ))}
+    </ul>
+  )
+}
+
+function DealItem({ deal, group }: { deal: Deal, group: DetailedGroup }) {
   const date = dayjs(deal.time).format('DD/MM/YYYY')
   const amount = deal.amount.toFixed(2)
+  const wisher = group.memberProfiles.find(m => m.id === deal.from)
   return (
-    <TableRow>
-      <TableCell className="font-medium">{date}</TableCell>
-      <TableCell>{deal.from}</TableCell>
-      <TableCell>{deal.note}</TableCell>
-      <TableCell className="text-right">{amount}</TableCell>
-    </TableRow>
+    <li className='flex flex-row gap-4 items-start'>
+      <UserAvatar className='w-8 h-8' user={wisher!} />
+      <main className='flex-1 min-w-0 flex flex-col gap-1'>
+        <p className=''>{deal.note}</p>
+        <p className='text-xs text-slate-500'>{date}</p>
+      </main>
+      <p className='font-mono grow-0 shrink-0 basis-16 text-right'>{amount}</p>
+    </li>
   )
 }
