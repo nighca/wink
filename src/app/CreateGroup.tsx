@@ -31,6 +31,7 @@ export default function CreateGroup() {
             <Label htmlFor="member">Another member</Label>
             <Input type="text" name="member" placeholder="Paste the user ID here" required />
           </div>
+          {/* TODO: pending status for submit button */}
           <Button type="submit" className="w-full">
             Create
           </Button>
