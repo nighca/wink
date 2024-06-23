@@ -21,8 +21,11 @@ export default async function WithUser({ children }: PropsWithChildren<{}>) {
           <DropdownMenuTrigger asChild>
             <UserAvatar className='shrink-0' user={user} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent side='bottom' align='start'>
-            <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+          <DropdownMenuContent side='bottom' align='end'>
+            <DropdownMenuLabel>
+              {user.name}
+              <p className='mt-2 text-xs text-slate-500'>ID: {user.id}</p>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <LogoutMenuItem />
           </DropdownMenuContent>
