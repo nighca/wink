@@ -50,6 +50,7 @@ export async function createGroup(formData: FormData) {
   if (member == '') throw new Error('Member required')
   const memberProfile = await getUserWithId(member)
   if (memberProfile == null) throw new Error(`Member ${member} not found`)
+  if (memberProfile.id === user.id) throw new Error('Cannot add self')
   await kv.set<Group>(name, {
     name,
     members: [user.id, member],
