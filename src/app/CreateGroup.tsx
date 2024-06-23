@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label'
 
 export default function CreateGroup() {
   return (
-    <Card className="mx-auto max-w-sm h-full">
+    <Card className="mx-auto max-w-sm">
       <CardHeader>
         <CardTitle className="text-2xl">Create group</CardTitle>
         <CardDescription>
