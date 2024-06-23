@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { UserProvider } from '@auth0/nextjs-auth0/client'
+import { Toaster } from "@/components/ui/toaster"
 import './globals.css'
 import styles from './layout.module.css'
 import WithUser from './WithUser'
@@ -26,6 +27,7 @@ export default function RootLayout({
               <main className={styles.main}>{children}</main>
             </WithUser>
           </div>
+          <Toaster />
         </body>
       </UserProvider>
     </html>
