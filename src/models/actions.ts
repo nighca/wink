@@ -6,6 +6,15 @@ import { kv } from '@vercel/kv'
 import { Deal, DetailedGroup, Group } from './types'
 import { ensureCurrentUser, getUserWithId } from './user'
 
+export async function checkInGroup(name: string) {
+  const user = await ensureCurrentUser()
+  unstable_noStore()
+  const group = await kv.get<Group>(name)
+  if (group == null) return false
+  if (!group.members.includes(user.id)) return false
+  return true
+}
+
 export async function getGroup(name: string) {
   const user = await ensureCurrentUser()
   unstable_noStore()
@@ -42,7 +51,9 @@ function validateName(name: string) {
 
 export async function createGroup(formData: FormData) {
   const user = await ensureCurrentUser()
-  const name = formData.get('name') as string
+  const nameValue = formData.get('name')
+  if (nameValue == null) throw new Error('Name required')
+  const name = nameValue as string
   validateName(name)
   const exists = (await kv.exists(name)) > 0
   if (exists) throw new Error('Group already exists')
