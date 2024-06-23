@@ -24,6 +24,7 @@ export default async function WithUser({ children }: PropsWithChildren<{}>) {
           <DropdownMenuContent side='bottom' align='end'>
             <DropdownMenuLabel>
               {user.name}
+              {/* TODO: click to copy */}
               <p className='mt-2 text-xs text-slate-500'>ID: {user.id}</p>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
