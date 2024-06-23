@@ -62,17 +62,17 @@ export default function AddDeal({ group, onAdded }: {
         </Button>
       )}
       <form className={cns("grid gap-4", !editting && 'hidden')} onSubmit={handleAddDeal}>
-        <Textarea ref={noteInput} name="note" placeholder="Note" required value={note} onChange={handleNoteChange} />
+        <Textarea ref={noteInput} name="note" disabled={submitting} placeholder="Note" required value={note} onChange={handleNoteChange} />
         <div className='flex gap-2 items-center'>
           <Label>Amount</Label>
           <span className='text-xs text-slate-500'>{minAmount}</span>
-          <Slider min={minAmount} max={maxAmount} step={1} value={[amount]} onValueChange={handleAmountChange} />
+          <Slider disabled={submitting} min={minAmount} max={maxAmount} step={1} value={[amount]} onValueChange={handleAmountChange} />
           <span className='text-xs text-slate-500'>{maxAmount}</span>
           </div>
-        <Button type="submit" className='w-full' disabled={submitting}>
+        <Button type="submit" className='w-full' loading={submitting}>
           Deal {amount}
         </Button>
-        <Button type="button" variant="ghost" onClick={endEditting}>
+        <Button type="button" variant="ghost" disabled={submitting} onClick={endEditting}>
           Cancel
         </Button>
       </form>

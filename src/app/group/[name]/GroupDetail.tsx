@@ -2,21 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import dayjs from 'dayjs'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Card, CardContent } from '@/components/ui/card'
 import UserAvatar from '@/components/UserAvatar'
 import { Deal, DetailedGroup } from '@/models'
 import AddDeal from './AddDeal'
@@ -84,10 +70,10 @@ function DealItem({ deal, group }: { deal: Deal, group: DetailedGroup }) {
   const wisher = group.memberProfiles.find(m => m.id === deal.from)
   return (
     <li className='flex flex-row gap-4 items-start'>
-      <UserAvatar className='w-8 h-8' user={wisher!} />
+      <UserAvatar className='w-10 h-10' user={wisher!} />
       <main className='flex-1 min-w-0 flex flex-col gap-1'>
         <p className=''>{deal.note}</p>
-        <p className='text-xs text-slate-500'>{date}</p>
+        <p className='text-xs text-slate-500'>@{date}</p>
       </main>
       <p className='font-mono grow-0 shrink-0 basis-16 text-right'>{amount}</p>
     </li>
