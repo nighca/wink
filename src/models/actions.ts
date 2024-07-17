@@ -33,7 +33,6 @@ export async function getDetailedGroup(name: string): Promise<DetailedGroup> {
   const group = await getGroup(name)
   const memberProfiles = await Promise.all(group.members.map(async id => {
     const user = await getUserWithId(id)
-    console.log('getDetailedGroup user', id, user)
     return user
   }))
   return { ...group, memberProfiles }
