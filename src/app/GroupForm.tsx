@@ -34,6 +34,7 @@ function FormContent() {
       const inGroup = await checkInGroup(name)
       if (inGroup) {
         router.push(`/group/${encodeURIComponent(name)}`)
+        await sleep(1000) // wait for router push to finish
         return
       }
       setMode('create')
@@ -48,7 +49,14 @@ function FormContent() {
     <>
       <div className="grid gap-2">
         <Label htmlFor="name">Name</Label>
-        <Input type="text" name="name" readOnly={mode ==='create'} value={name} onChange={handleNameChange} required />
+        <Input
+          type="text"
+          name="name"
+          readOnly={mode ==='create'}
+          value={name}
+          onChange={handleNameChange}
+          required
+        />
       </div>
       {mode === 'initial' && <Button type="button" className="w-full" loading={checking} onClick={check}>
         Continue
@@ -64,4 +72,8 @@ function FormContent() {
       </>}
     </>
   )
+}
+
+function sleep(ms: number) {
+  return new Promise<void>(resolve => setTimeout(resolve, ms))
 }
