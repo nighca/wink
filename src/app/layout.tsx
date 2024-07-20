@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { UserProvider } from '@auth0/nextjs-auth0/client'
 import { Toaster } from "@/components/ui/toaster"
@@ -12,6 +12,14 @@ export const metadata: Metadata = {
   title: 'Wink - Wish bank',
   description: 'Created by nighca',
   manifest: '/manifest.json'
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  userScalable: false
 }
 
 export default function RootLayout({
